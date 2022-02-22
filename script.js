@@ -1,5 +1,31 @@
 var device_token = "";
 
+function showUserInfo(user_id) {
+    var profile_info;
+    const xhr = new XMLHttpRequest();
+
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState === XMLHttpRequest.DONE) {
+        console.log(xhr.responseText);
+        var obj = JSON.parse(xhr.responseText);
+        if (obj !== undefined) {
+            var img = document.createElement("img");
+            img.href = obj.picture;
+        
+            var name = document.createElement("p");
+            var textName = document.createTextNode(obj.name);
+            name.appendChild(textName);
+            profile_info.appendChild(img);
+            profile_info.appendChild(name);
+        }
+        }
+    };
+    xhr.open('GET', 'https://api.poetizer.com/users/' + user_id, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send();
+    return profile_info;
+}
+
 function login() {
     var email = document.getElementById("uname").value;
     var password = document.getElementById("psw").value;
@@ -13,6 +39,7 @@ function login() {
         if (obj !== undefined) {
             document.getElementById('id01').style.display='none';
             device_token = obj.device_token;
+            document.getElementById('login-area').innerHTML= showUserInfo(obj.user_id);
         }
         }
     };

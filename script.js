@@ -12,7 +12,7 @@ function showUserInfo(user_id) {
             document.getElementById('id01').style.display='none';
 
             var img = document.createElement("img");
-            img.href = obj.picture;
+            img.src = obj.picture;
         
             var name = document.createElement("p");
             var textName = document.createTextNode(obj.name);

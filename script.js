@@ -8,7 +8,7 @@ function showUserInfo(user_id) {
       if (xhr.readyState === XMLHttpRequest.DONE) {
         console.log(xhr.responseText);
         var obj = JSON.parse(xhr.responseText);
-        if (obj !== undefined) {
+
             var img = document.createElement("img");
             img.href = obj.picture;
         
@@ -17,11 +17,12 @@ function showUserInfo(user_id) {
             name.appendChild(textName);
             profile_info.appendChild(img);
             profile_info.appendChild(name);
-        }
+        
         }
     };
     xhr.open('GET', 'https://api.poetizer.com/users/' + user_id, true);
     xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Authorization', 'Device-token ' + device_token);
     xhr.send();
     return profile_info;
 }

@@ -42,6 +42,7 @@ function login() {
         obj = JSON.parse(xhr.responseText);
         if (obj !== undefined) {
             device_token = obj.device_token;
+            showUserInfo(obj.user_id);
         }
         }
     };
@@ -51,8 +52,6 @@ function login() {
     var params = '{"email": "' + email + '","password": "' + password + '","platform": "android","device_name": "Randomdroid 9"}';
     
     xhr.send(params);
-
-    showUserInfo(obj.user_id);
 }
 
 function msgprint() {

@@ -33,14 +33,14 @@
             <div class="page-name container">
               <div class="container section" id="header" name="Header">
                 <div class="widget Header" data-version="2" id="Header1">
-                  <div class="header-widget">
+                  
                       <h1>
                         Search by tag 🏷 @ Poetizer
                       </h1>
                     <h2>
                       Vyhledávejte básně na Poetizeru podle tagů
                     </h2>
-                  </div>
+                  
                 </div>
               </div>
               <nav role="navigation">
@@ -80,7 +80,7 @@
     <body>
 
       <div id="login-area">
-        <h2>Nejprve se přihlašte</h2>
+        <h2>Nejprve se přihlaste</h2>
         <button onclick="document.getElementById('id01').style.display='block'"
           style="width:auto;">Login</button>
       </div>
@@ -127,10 +127,11 @@
       <h2>
         Vyhledávání dle #tagu
       </h2>
-      <p>Zadávejte prosím bez symbolu #</p>
+      <label>Zadávejte prosím bez symbolu #</label>
       <div class="search-form">
+        <label for="tags">Zadávejte prosím bez symbolu #</label>
         <input type="text" id="tags" placeholder="Zadej tag">
-        <input type="button" onclick="msgprint()" value="Vyhledej básně">
+        <input type="button" id="search-submit" onclick="msgprint()" value="Vyhledej básně">
       </div>
 
   </aside>

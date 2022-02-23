@@ -18,8 +18,8 @@ function showUserInfo(user_id) {
             var name = document.createElement("p");
             var textName = document.createTextNode("Jste přihlášen pod účtem: " + obj.name);
             name.appendChild(textName);
- //           document.getElementById('login-area').appendChild(img);
-  //          document.getElementById('login-area').appendChild(name);
+            //           document.getElementById('login-area').appendChild(img);
+            //          document.getElementById('login-area').appendChild(name);
 
             document.getElementById('login-area').innerHTML = img.outerHTML;
             document.getElementById('login-area').innerHTML += name.outerHTML;
@@ -104,4 +104,17 @@ function msgprint() {
     xhr.setRequestHeader('Authorization', 'Device-token ' + device_token);
     var params = '{"tags": ["' + tags + '"]}';
     xhr.send(params);
+}
+
+window.onload = function () {
+    document.querySelector('#tags').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            msgprint();
+        }
+    });
+    document.querySelector('#psw').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            login();
+        }
+    });
 }

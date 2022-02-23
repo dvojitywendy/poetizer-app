@@ -467,6 +467,10 @@ blockquote {
     color: #424242
 }
 
+.Header h2 {
+    text-align: center;
+}
+
 article {
     background: #ffffff;
     min-height: 40px;

@@ -16,13 +16,12 @@ function showUserInfo(user_id) {
             img.src = obj.picture;
 
             var name = document.createElement("p");
-            var textName = document.createTextNode("Jste přihlášen pod účtem: " + obj.name);
+            var textName = document.createTextNode(obj.name);
             name.appendChild(textName);
- //           document.getElementById('login-area').appendChild(img);
-  //          document.getElementById('login-area').appendChild(name);
+            document.getElementById('login-area').appendChild(img);
+            profile_info.appendChild(name);
 
-            document.getElementById('login-area').innerHTML = img.outerHTML;
-            document.getElementById('login-area').innerHTML += name.outerHTML;
+            document.getElementById('login-area').innerHTML = profile_info;
         }
     };
     xhr.open('GET', 'https://api.poetizer.com/users/' + user_id, true);

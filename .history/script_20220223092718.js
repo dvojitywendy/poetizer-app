@@ -16,7 +16,7 @@ function showUserInfo(user_id) {
             img.src = obj.picture;
 
             var name = document.createElement("p");
-            var textName = document.createTextNode("Jste přihlášen pod účtem: " + obj.name);
+            var textName = document.createTextNode(""obj.name);
             name.appendChild(textName);
  //           document.getElementById('login-area').appendChild(img);
   //          document.getElementById('login-area').appendChild(name);

@@ -3,31 +3,31 @@ var device_token = "";
 function showUserInfo(user_id) {
     var profile_info;
     const xhr = new XMLHttpRequest();
+    var obj;
 
     xhr.onreadystatechange = () => {
       if (xhr.readyState === XMLHttpRequest.DONE) {
         console.log(xhr.responseText);
-        var obj = JSON.parse(xhr.responseText);
-
-            document.getElementById('id01').style.display='none';
-
-            var img = document.createElement("img");
-            img.src = obj.picture;
-        
-            var name = document.createElement("p");
-            var textName = document.createTextNode(obj.name);
-            name.appendChild(textName);
-            profile_info.appendChild(img);
-            profile_info.appendChild(name);
-
-            document.getElementById('login-area').innerHTML = profile_info;
-        
+        obj = JSON.parse(xhr.responseText);
         }
     };
     xhr.open('GET', 'https://api.poetizer.com/users/' + user_id, true);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.setRequestHeader('Authorization', 'Device-token ' + device_token);
     xhr.send();
+
+    document.getElementById('id01').style.display='none';
+
+    var img = document.createElement("img");
+    img.src = obj.picture;
+        
+    var name = document.createElement("p");
+    var textName = document.createTextNode(obj.name);
+    name.appendChild(textName);
+    profile_info.appendChild(img);
+    profile_info.appendChild(name);
+
+    document.getElementById('login-area').innerHTML = profile_info;
 }
 
 function login() {

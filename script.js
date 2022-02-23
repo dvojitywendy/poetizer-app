@@ -9,6 +9,8 @@ function showUserInfo(user_id) {
         console.log(xhr.responseText);
         var obj = JSON.parse(xhr.responseText);
 
+            document.getElementById('id01').style.display='none';
+
             var img = document.createElement("img");
             img.href = obj.picture;
         
@@ -17,6 +19,8 @@ function showUserInfo(user_id) {
             name.appendChild(textName);
             profile_info.appendChild(img);
             profile_info.appendChild(name);
+
+            document.getElementById('login-area').innerHTML = profile_info;
         
         }
     };
@@ -24,30 +28,31 @@ function showUserInfo(user_id) {
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.setRequestHeader('Authorization', 'Device-token ' + device_token);
     xhr.send();
-    return profile_info;
 }
 
 function login() {
     var email = document.getElementById("uname").value;
     var password = document.getElementById("psw").value;
-
+    var obj;
     const xhr = new XMLHttpRequest();
 
     xhr.onreadystatechange = () => {
       if (xhr.readyState === XMLHttpRequest.DONE) {
         console.log(xhr.responseText);
-        var obj = JSON.parse(xhr.responseText);
+        obj = JSON.parse(xhr.responseText);
         if (obj !== undefined) {
-            document.getElementById('id01').style.display='none';
             device_token = obj.device_token;
-            document.getElementById('login-area').innerHTML= showUserInfo(obj.user_id);
         }
         }
     };
     xhr.open('POST', 'https://api.poetizer.com/devices/email', true);
     xhr.setRequestHeader('Content-Type', 'application/json');
+
     var params = '{"email": "' + email + '","password": "' + password + '","platform": "android","device_name": "Randomdroid 9"}';
+    
     xhr.send(params);
+
+    showUserInfo(obj.user_id);
 }
 
 function msgprint() {

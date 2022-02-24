@@ -1,115 +1,111 @@
-var device_token = "";
+var baseUrl = "https://api.poetizer.com";
+var webUrl = "https://poetizer.com";
+var device_token = window.localStorage.getItem("device_token");
 
 function showUserInfo(user_id) {
-    const xhr = new XMLHttpRequest();
 
-    xhr.onreadystatechange = () => {
-        if (xhr.readyState === XMLHttpRequest.DONE) {
-            console.log(xhr.responseText);
-            var obj = JSON.parse(xhr.responseText);
-
+    fetch(baseUrl + '/users/' + user_id, {
+        method: 'get',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Device-token ' + device_token
+        }
+    })
+        .then(response => response.json())
+        .then(user => {
             document.getElementById('id01').style.display = 'none';
 
-            var profile_info = document.createElement("div");
-
             var img = document.createElement("img");
-            img.src = obj.picture;
+            img.src = user.picture;
 
             var name = document.createElement("p");
-            var textName = document.createTextNode("Jste přihlášen pod účtem: " + obj.name);
+            var textName = document.createTextNode("Jste přihlášen pod účtem: " + user.name);
             name.appendChild(textName);
-            //           document.getElementById('login-area').appendChild(img);
-            //          document.getElementById('login-area').appendChild(name);
 
             document.getElementById('login-area').innerHTML = img.outerHTML;
             document.getElementById('login-area').innerHTML += name.outerHTML;
-        }
-    };
-    xhr.open('GET', 'https://api.poetizer.com/users/' + user_id, true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.setRequestHeader('Authorization', 'Device-token ' + device_token);
-    xhr.send();
+        });
 }
 
 function login() {
     var email = document.getElementById("uname").value;
     var password = document.getElementById("psw").value;
-    const xhr = new XMLHttpRequest();
+    var params = { "email": email, "password": password, "platform": "android", "device_name": "Randomdroid 9" };
 
-    xhr.onreadystatechange = () => {
-        if (xhr.readyState === XMLHttpRequest.DONE) {
-            console.log(xhr.responseText);
-            var obj = JSON.parse(xhr.responseText);
-            if (obj !== undefined) {
-                device_token = obj.device_token;
-                showUserInfo(obj.user_id);
-            }
-        }
-    };
-    xhr.open('POST', 'https://api.poetizer.com/devices/email', true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-
-    var params = '{"email": "' + email + '","password": "' + password + '","platform": "android","device_name": "Randomdroid 9"}';
-
-    xhr.send(params);
+    getToken(params);
 }
 
-function msgprint() {
-    var tags = document.getElementById("tags").value;
+function getToken(params) {
+    fetch(baseUrl + '/devices/email', {
+        method: 'post',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(params)
+    })
+        .then(response => response.json())
+        .then(token_info => {
+            device_token = token_info.device_token;
+            window.localStorage.setItem("device_token", device_token);
+            user_id = token_info.user_id;
+            showUserInfo(user_id);
+        });
 
-    const xhr = new XMLHttpRequest();
+}
 
-    xhr.onreadystatechange = () => {
-        if (xhr.readyState === XMLHttpRequest.DONE) {
-            console.log(xhr.responseText);
-            var obj = JSON.parse(xhr.responseText);
+function getPoemsByTags() {
+    var querytags = document.getElementById("tags").value;
+    var params = { "tags": [querytags] };
 
-            var element = document.getElementById("main");
-            element.innerHTML = "";
+    fetch(baseUrl + '/poems/search?limit=6&offset=0', {
+        method: 'post',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Device-token ' + device_token
+        },
+        body: JSON.stringify(params)
+    })
+        .then(response => response.json())
+        .then(poems => {
+            var maindiv = document.getElementById("main");
+            maindiv.innerHTML = "";
 
-            for (var i = 0; i < obj.poems.length; i++) {
-
+            poems.poems.forEach(element => {
                 var article = document.createElement("article");
 
                 var linkTitle = document.createElement("a");
-                linkTitle.href = "https://poetizer.com/poem/" + obj.poems[i].id;
+                linkTitle.href = `${webUrl}/poem/${element.id}`;
                 linkTitle.target = "_blank";
                 var title = document.createElement("h2");
-                var textTitle = document.createTextNode(obj.poems[i].title);
+                var textTitle = document.createTextNode(element.title);
                 title.appendChild(textTitle);
                 linkTitle.appendChild(title);
 
                 var para = document.createElement("p");
-                var textPara = para.insertAdjacentHTML('afterBegin', obj.poems[i].text);
-
+                para.insertAdjacentHTML('afterBegin', element.text);
 
                 var linkAuthor = document.createElement("a");
-                linkAuthor.href = "https://poetizer.com/author/" + obj.poems[i].author.id;
+                linkAuthor.href = `${webUrl}/author/${element.author.id}`;
                 linkAuthor.target = "_blank";
-                var author = document.createElement("p");
-                var textAuthor = document.createTextNode("Autor: " + obj.poems[i].author.name);
-                author.appendChild(textAuthor);
-                linkAuthor.appendChild(author);
+                linkAuthor.innerText = element.author.name;
+
+                var hashtags = document.createElement("p");
+                hashtags.innerText = `Tags: ${element.tags}`;
 
                 article.appendChild(linkTitle);
                 article.appendChild(para);
-                article.appendChild(linkAuthor);
+                article.insertAdjacentHTML('beforeend', `Autor: ${linkAuthor.outerHTML}`);
+                article.appendChild(hashtags);
 
-                element.appendChild(article);
-            }
-        }
-    };
-    xhr.open('POST', 'https://api.poetizer.com/poems/search?limit=6&offset=0', true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.setRequestHeader('Authorization', 'Device-token ' + device_token);
-    var params = '{"tags": ["' + tags + '"]}';
-    xhr.send(params);
+                maindiv.appendChild(article);
+            });
+        })
 }
 
 window.onload = function () {
     document.querySelector('#tags').addEventListener('keypress', function (e) {
         if (e.key === 'Enter') {
-            msgprint();
+            getPoemsByTags();
         }
     });
     document.querySelector('#psw').addEventListener('keypress', function (e) {

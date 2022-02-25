@@ -1,6 +1,7 @@
 var baseUrl = "https://api.poetizer.com";
 var webUrl = "https://poetizer.com";
 var device_token = window.localStorage.getItem("device_token");
+var limit, offset;
 
 function showUserInfo(user_id) {
 
@@ -53,11 +54,16 @@ function getToken(params) {
 
 }
 
-function getPoemsByTags() {
+function getFirstPoemsByTags() {
+    getPoemsByTags(6, 0);
+}
+
+// This is quick&dirty solution when undefined limit and offset returns all poems for certain tag
+function getPoemsByTags(limit, offset) {
     var querytags = document.getElementById("tags").value;
     var params = { "tags": [querytags] };
 
-    fetch(baseUrl + '/poems/search?limit=6&offset=0', {
+    fetch(baseUrl + '/poems/search?limit=' + limit + '&offset=' + offset, {
         method: 'post',
         headers: {
             'Content-Type': 'application/json',
@@ -99,13 +105,35 @@ function getPoemsByTags() {
 
                 maindiv.appendChild(article);
             });
+        
+            /* TODO
+                if (poems.next != null) {
+                setLimitAndOffset();
+                createNextButton();
+                        }
+            */
         })
+}
+
+function setLimitAndOffset() {
+    var next_text = poems.next;
+    const myArray = next_text.split("=");
+    const bef_limit = myArray[1].split("&");
+    limit = bef_limit[0];
+    offset = myArray[2];
+}
+
+function createNextButton() {
+    var next_button = document.createElement("button");
+    next_button.setAttribute('onclick', getPoemsByTags(limit, offset));
+    next_button.value = "Další básně";
+    document.getElementById("next-area").appendChild(next_button);
 }
 
 window.onload = function () {
     document.querySelector('#tags').addEventListener('keypress', function (e) {
         if (e.key === 'Enter') {
-            getPoemsByTags();
+            getPoemsByTags(limit, offset);
         }
     });
     document.querySelector('#psw').addEventListener('keypress', function (e) {

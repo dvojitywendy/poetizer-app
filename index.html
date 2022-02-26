@@ -27,7 +27,7 @@
     </div>
     <div class="page_body">
       <div class="centered">
-        <header class="centered-top-container animating" role="banner" style="">
+        <header class="centered-top-container animating" role="banner">
           <div class="centered-top">
             <div class="clearboth"></div>
             <div class="page-name container">
@@ -52,7 +52,8 @@
         </header>
         <div class="centered-top-placeholder"></div>
 
-        <div >
+        <div>
+          <div id="stats"></div>
           <main class="centered-bottom" id="main" role="main" tabindex="-1">
             <h2>Jak funguje vyhledávání?</h2>
             <article>1. Nejdříve klikněte na zelené tlačítko Login a zadejte svoje přihlašovací údaje, které používáte
@@ -126,11 +127,10 @@
       <h2>
         Vyhledávání dle #tagu
       </h2>
-      <label>Zadávejte prosím bez symbolu #</label>
       <div class="search-form">
         <label for="tags">Zadávejte prosím bez symbolu #</label>
         <input type="text" id="tags" placeholder="Zadej tag">
-        <input type="button" id="search-submit" onclick="getPoemsByTags()" value="Vyhledej básně">
+        <input type="button" id="search-submit" onclick="getFirstPoemsByTags()" value="Vyhledej básně">
       </div>
 
   </aside>

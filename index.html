@@ -101,7 +101,7 @@
             <label for="psw"><b>Vaše Heslo k Poetizeru</b></label>
             <input type="password" placeholder="Enter Password" id="psw" required>
 
-            <button type="submit" onclick="login()">Login</button>
+            <button type="submit" onclick="poetizer.login()">Login</button>
           </div>
 
           <div class="container" style="background-color:#f1f1f1">
@@ -130,7 +130,7 @@
       <div class="search-form">
         <label for="tags">Zadávejte prosím bez symbolu #</label>
         <input type="text" id="tags" placeholder="Zadej tag">
-        <input type="button" id="search-submit" onclick="getFirstPoemsByTags()" value="Vyhledej básně">
+        <input type="button" id="search-submit" onclick="poetizer.getFirstPoemsByTags()" value="Vyhledej básně">
       </div>
 
   </aside>

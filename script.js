@@ -59,8 +59,6 @@ var poetizer = (function () {
     }
 
     function getPoemsByTags(limit, offset) {
-        const queryTags = document.getElementById('tags').value;
-        const params = { 'tags': [queryTags] };
 
         fetch(`${BASE_URL}/poems/search?limit=${limit}&offset=${offset}`, {
             method: 'post',
@@ -68,7 +66,7 @@ var poetizer = (function () {
                 'Content-Type': 'application/json',
                 'Authorization': `Device-token ${deviceToken}`
             },
-            body: JSON.stringify(params)
+            body: getTagsAsParams()
         })
             .then(response => response.json())
             .then(poems => {
@@ -114,6 +112,11 @@ var poetizer = (function () {
                     hideNextButton();
                 }
             })
+    }
+
+    function getTagsAsParams() {
+        const queryTags = document.getElementById('tags').value;
+        return `{"tags":["${queryTags.replace(/\s+/g, '').replace(/,/g, `", "`)}"]}`;
     }
 
     function setLimitAndOffset(nextPageLink) {

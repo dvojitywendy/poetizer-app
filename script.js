@@ -2,10 +2,11 @@ var poetizer = (function () {
     const BASE_URL = 'https://api.poetizer.com';
     const WEB_URL = 'https://poetizer.com';
     let deviceToken = window.localStorage.getItem('device_token');
+    let userId = window.localStorage.getItem('user_id');
     let limit, offset;
     let calledAlready = false;
 
-    function showUserInfo(userId) {
+    function showUserInfo() {
 
         fetch(`${BASE_URL}/users/${userId}`, {
             method: 'get',
@@ -24,8 +25,15 @@ var poetizer = (function () {
                 const userNamePgf = document.createElement('p');
                 userNamePgf.innerText = `Jste přihlášen pod účtem: ${user.name}`;
 
-                document.getElementById('login-area').innerHTML = userImg.outerHTML;
-                document.getElementById('login-area').innerHTML += userNamePgf.outerHTML;
+                const logoutBtn = document.createElement('button');
+                logoutBtn.onclick = () => logout();
+                logoutBtn.setAttribute('id', 'logout-button');
+                logoutBtn.innerText = `Log out`;
+
+                const loginAreaDiv = document.getElementById('login-area');
+                loginAreaDiv.innerHTML = userImg.outerHTML;
+                loginAreaDiv.innerHTML += userNamePgf.outerHTML;
+                loginAreaDiv.appendChild(logoutBtn);
             });
     }
 
@@ -35,6 +43,7 @@ var poetizer = (function () {
         const params = { 'email': email, 'password': password, 'platform': 'android', 'device_name': 'Randomdroid 9' };
 
         getToken(params);
+        showUserInfo();
     }
 
     function getToken(params) {
@@ -49,73 +58,89 @@ var poetizer = (function () {
             .then(tokenInfo => {
                 deviceToken = tokenInfo.device_token;
                 window.localStorage.setItem('device_token', deviceToken);
-                showUserInfo(tokenInfo.user_id);
+                userId = tokenInfo.user_id;
+                window.localStorage.setItem('user_id', userId);
+                const jwtAccess = tokenInfo.jwt.access.split('.')[1];
+                const expirationInfo = JSON.parse(atob(jwtAccess));
+                window.localStorage.setItem('expiration', expirationInfo.exp);
             });
 
     }
 
+    function logout() {
+        window.localStorage.clear();
+        location.reload();
+    }
+
     function getFirstPoemsByTags() {
+        const mainDiv = document.getElementById('main');
+        mainDiv.innerHTML = '';
         getPoemsByTags(6, 0);
     }
 
     function getPoemsByTags(limit, offset) {
-        if(getTagsAsParams().length != 0) {
-        fetch(`${BASE_URL}/poems/search?limit=${limit}&offset=${offset}`, {
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Device-token ${deviceToken}`
-            },
-            body: getTagsAsParams()
-        })
-            .then(response => response.json())
-            .then(poems => {
-                const mainDiv = document.getElementById('main');
-                if (!calledAlready) {
-                    mainDiv.innerHTML = '';
-                }
-                if (poems.poems.length == 0) {
-                    mainDiv.innerText = `Pro tento tag nebyly nalezeny žádné básně`;
-                }
-                else {
-                    poems.poems.forEach(element => {
-                        const article = document.createElement('article');
-
-                        const poemTitleLnk = document.createElement('a');
-                        poemTitleLnk.href = `${WEB_URL}/poem/${element.id}`;
-                        poemTitleLnk.target = '_blank';
-                        const poemTitleHdr = document.createElement('h2');
-                        poemTitleHdr.innerText = element.title;
-                        poemTitleLnk.appendChild(poemTitleHdr);
-
-                        const poemBodyPgf = document.createElement('p');
-                        poemBodyPgf.insertAdjacentHTML('afterBegin', element.text);
-
-                        const authorLnk = document.createElement('a');
-                        authorLnk.href = `${WEB_URL}/author/${element.author.id}`;
-                        authorLnk.target = '_blank';
-                        authorLnk.innerText = element.author.name;
-
-                        const hashtagsPgf = document.createElement('p');
-                        hashtagsPgf.innerText = `Tags: ${element.tags}`;
-
-                        article.appendChild(poemTitleLnk);
-                        article.appendChild(poemBodyPgf);
-                        article.insertAdjacentHTML('beforeend', `Autor: ${authorLnk.outerHTML}`);
-                        article.appendChild(hashtagsPgf);
-
-                        mainDiv.appendChild(article);
-                    });
-
-                    if (poems.poems.length == limit) {
-                        setLimitAndOffset(poems.next);
-                        createNextButton();
-                    }
-                    if (poems.poems.length < limit) {
-                        hideNextButton();
-                    }
-                }
+        if (getTagsAsParams().length != 0 && deviceToken != null) {
+            fetch(`${BASE_URL}/poems/search?limit=${limit}&offset=${offset}`, {
+                method: 'post',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Device-token ${deviceToken}`
+                },
+                body: getTagsAsParams()
             })
+                .then(response => response.json())
+                .then(poems => {
+                    const mainDiv = document.getElementById('main');
+
+                    if (poems.poems.length == 0) {
+                        const errorMessage = `Pro tento tag nebyly nalezeny žádné básně`;
+                        if(!calledAlready) {
+                        mainDiv.innerText = errorMessage;
+                        }
+                        hideNextButton(errorMessage);
+                    }
+                    else {
+                        poems.poems.forEach(element => {
+                            const article = document.createElement('article');
+
+                            const poemTitleLnk = document.createElement('a');
+                            poemTitleLnk.href = `${WEB_URL}/poem/${element.id}`;
+                            poemTitleLnk.target = '_blank';
+                            const poemTitleHdr = document.createElement('h2');
+                            poemTitleHdr.innerText = element.title;
+                            poemTitleLnk.appendChild(poemTitleHdr);
+
+                            const poemBodyPgf = document.createElement('p');
+                            poemBodyPgf.insertAdjacentHTML('afterBegin', element.text);
+
+                            const authorLnk = document.createElement('a');
+                            authorLnk.href = `${WEB_URL}/author/${element.author.id}`;
+                            authorLnk.target = '_blank';
+                            authorLnk.innerText = element.author.name;
+
+                            const hashtagsPgf = document.createElement('p');
+                            hashtagsPgf.innerText = `Tags: ${element.tags}`;
+
+                            article.appendChild(poemTitleLnk);
+                            article.appendChild(poemBodyPgf);
+                            article.insertAdjacentHTML('beforeend', `Autor: ${authorLnk.outerHTML}`);
+                            article.appendChild(hashtagsPgf);
+
+                            mainDiv.appendChild(article);
+                        });
+
+                        if (poems.poems.length == limit) {
+                            setLimitAndOffset(poems.next);
+                            createNextButton();
+                        }
+                        if (poems.poems.length < limit) {
+                            hideNextButton(`Žádné další básně`);
+                        }
+                    }
+                })
+        } else {
+            const mainDiv = document.getElementById('main');
+            mainDiv.innerText = `Před vyhledáváním se prosím přihlaste kliknutím na tlačítko Login`;
         }
     }
 
@@ -143,18 +168,18 @@ var poetizer = (function () {
             nextBtn.setAttribute('id', 'next-poem-button');
             nextBtn.innerText = `Další básně`;
             document.getElementById('next-area').appendChild(nextBtn);
+        } else {
+            const nextBtn = document.getElementById('next-poem-button');
+            nextBtn.onclick = () => getPoemsByTags(limit, offset);
+            nextBtn.innerText = `Další básně`;
         }
         calledAlready = true;
     }
 
-    function hideNextButton() {
-        const mainDiv = document.getElementById('main');
-        if (calledAlready) {
-            document.getElementById('next-poem-button').hidden = true;
-        }
-        const endOfListPgf = document.createElement('p');
-        endOfListPgf.innerText = `Žádné další básně`;
-        mainDiv.appendChild(endOfListPgf);
+    function hideNextButton(errorMessage) {
+        const nextBtn = document.getElementById('next-poem-button');
+        nextBtn.onclick = 'javascript:void(0)';
+        nextBtn.innerText = errorMessage;
     }
 
     window.onload = function () {

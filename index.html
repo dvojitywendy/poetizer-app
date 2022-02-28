@@ -33,14 +33,14 @@
             <div class="page-name container">
               <div class="container section" id="header" name="Header">
                 <div class="widget Header" data-version="2" id="Header1">
-                  
-                      <h1>
-                        Search by tag 🏷 @ Poetizer
-                      </h1>
-                    <h2>
-                      Vyhledávejte básně na Poetizeru podle tagů
-                    </h2>
-                  
+
+                  <h1>
+                    Search by tag 🏷 @ Poetizer
+                  </h1>
+                  <h2>
+                    Vyhledávejte básně na Poetizeru podle tagů
+                  </h2>
+
                 </div>
               </div>
               <nav role="navigation">
@@ -57,12 +57,11 @@
           <main class="centered-bottom" id="main" role="main" tabindex="-1">
             <h2>Jak funguje vyhledávání?</h2>
             <article>1. Nejdříve klikněte na zelené tlačítko Login a zadejte svoje přihlašovací údaje, které používáte
-              do Poetizeru.<br />Nemusíte se bát jejich zneužití, váš e-mail ani heslo se nikam se neukládají.<br />
-              2. Poté zadejte hashtag, podle kterého chcete básně hledat a kliněte na tlačítko Vyhledat.
+              do Poetizeru.<br />Nemusíte se bát jejich zneužití, váš e-mail ani heslo se nikam se
+              neukládají.<br /><br />
+              2. Poté zadejte hashtag, podle kterého chcete básně hledat a klikněte na tlačítko Vyhledat.
               <br /><br />
-              Aktuální verze aplikace podporuje pouze 1 tag.
-              <br /><br />
-              Při obnovení stránky se musíte přihlásit znovu.
+              Aktuální verze aplikace podporuje vyhledávání více tagů, které prosím oddělujte čárkou.
             </article>
           </main>
           <div id="next-area"></div>
@@ -81,8 +80,7 @@
 
       <div id="login-area">
         <h2>Nejprve se přihlaste</h2>
-        <button onclick="document.getElementById('id01').style.display='block'"
-          style="width:auto;">Login</button>
+        <button onclick="document.getElementById('id01').style.display='block'" style="width:auto;">Login</button>
       </div>
 
       <div id="id01" class="modal">
@@ -130,7 +128,8 @@
       <div class="search-form">
         <label for="tags">Zadávejte prosím bez symbolu # a tagy oddělujte čárkou</label>
         <input type="text" id="tags" placeholder="Zadej tag">
-        <button id="search-submit" onclick="poetizer.getFirstPoemsByTags()" value="Vyhledej básně">Vyhledej básně</button>
+        <button id="search-submit" onclick="poetizer.getFirstPoemsByTags()" value="Vyhledej básně">Vyhledej
+          básně</button>
       </div>
 
   </aside>

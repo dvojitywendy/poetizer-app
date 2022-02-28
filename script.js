@@ -59,7 +59,7 @@ var poetizer = (function () {
     }
 
     function getPoemsByTags(limit, offset) {
-
+        if(getTagsAsParams().length != 0) {
         fetch(`${BASE_URL}/poems/search?limit=${limit}&offset=${offset}`, {
             method: 'post',
             headers: {
@@ -74,48 +74,58 @@ var poetizer = (function () {
                 if (!calledAlready) {
                     mainDiv.innerHTML = '';
                 }
-
-                poems.poems.forEach(element => {
-                    const article = document.createElement('article');
-
-                    const poemTitleLnk = document.createElement('a');
-                    poemTitleLnk.href = `${WEB_URL}/poem/${element.id}`;
-                    poemTitleLnk.target = '_blank';
-                    const poemTitleHdr = document.createElement('h2');
-                    poemTitleHdr.innerText = element.title;
-                    poemTitleLnk.appendChild(poemTitleHdr);
-
-                    const poemBodyPgf = document.createElement('p');
-                    poemBodyPgf.insertAdjacentHTML('afterBegin', element.text);
-
-                    const authorLnk = document.createElement('a');
-                    authorLnk.href = `${WEB_URL}/author/${element.author.id}`;
-                    authorLnk.target = '_blank';
-                    authorLnk.innerText = element.author.name;
-
-                    const hashtagsPgf = document.createElement('p');
-                    hashtagsPgf.innerText = `Tags: ${element.tags}`;
-
-                    article.appendChild(poemTitleLnk);
-                    article.appendChild(poemBodyPgf);
-                    article.insertAdjacentHTML('beforeend', `Autor: ${authorLnk.outerHTML}`);
-                    article.appendChild(hashtagsPgf);
-
-                    mainDiv.appendChild(article);
-                });
-
-                if (poems.poems.length == limit) {
-                    setLimitAndOffset(poems.next);
-                    createNextButton();
+                if (poems.poems.length == 0) {
+                    mainDiv.innerText = `Pro tento tag nebyly nalezeny žádné básně`;
                 }
-                if (poems.poems.length < limit) {
-                    hideNextButton();
+                else {
+                    poems.poems.forEach(element => {
+                        const article = document.createElement('article');
+
+                        const poemTitleLnk = document.createElement('a');
+                        poemTitleLnk.href = `${WEB_URL}/poem/${element.id}`;
+                        poemTitleLnk.target = '_blank';
+                        const poemTitleHdr = document.createElement('h2');
+                        poemTitleHdr.innerText = element.title;
+                        poemTitleLnk.appendChild(poemTitleHdr);
+
+                        const poemBodyPgf = document.createElement('p');
+                        poemBodyPgf.insertAdjacentHTML('afterBegin', element.text);
+
+                        const authorLnk = document.createElement('a');
+                        authorLnk.href = `${WEB_URL}/author/${element.author.id}`;
+                        authorLnk.target = '_blank';
+                        authorLnk.innerText = element.author.name;
+
+                        const hashtagsPgf = document.createElement('p');
+                        hashtagsPgf.innerText = `Tags: ${element.tags}`;
+
+                        article.appendChild(poemTitleLnk);
+                        article.appendChild(poemBodyPgf);
+                        article.insertAdjacentHTML('beforeend', `Autor: ${authorLnk.outerHTML}`);
+                        article.appendChild(hashtagsPgf);
+
+                        mainDiv.appendChild(article);
+                    });
+
+                    if (poems.poems.length == limit) {
+                        setLimitAndOffset(poems.next);
+                        createNextButton();
+                    }
+                    if (poems.poems.length < limit) {
+                        hideNextButton();
+                    }
                 }
             })
+        }
     }
 
     function getTagsAsParams() {
-        const queryTags = document.getElementById('tags').value;
+        let queryTags = document.getElementById('tags').value.trim();
+        if (queryTags.length == 0 || queryTags == `Zadej tag`) {
+            const mainDiv = document.getElementById('main');
+            mainDiv.innerText = `Nezadali jste žádný tag do vyhledávacího okýnka :)`;
+            return '';
+        }
         return `{"tags":["${queryTags.replace(/\s+/g, '').replace(/,/g, `", "`)}"]}`;
     }
 

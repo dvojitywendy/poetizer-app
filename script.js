@@ -3,6 +3,7 @@ var poetizer = (function () {
     const WEB_URL = 'https://poetizer.com';
     let deviceToken = window.localStorage.getItem('device_token');
     let userId = window.localStorage.getItem('user_id');
+    let expiration = window.localStorage.getItem('expiration');
     let limit, offset;
     let calledAlready = false;
 
@@ -94,8 +95,8 @@ var poetizer = (function () {
 
                     if (poems.poems.length == 0) {
                         const errorMessage = `Pro tento tag nebyly nalezeny žádné básně`;
-                        if(!calledAlready) {
-                        mainDiv.innerText = errorMessage;
+                        if (!calledAlready) {
+                            mainDiv.innerText = errorMessage;
                         }
                         hideNextButton(errorMessage);
                     }
@@ -193,6 +194,9 @@ var poetizer = (function () {
                 login();
             }
         });
+        if (deviceToken != null && expiration > (Date.now() / 1000)) {
+            showUserInfo();
+        }
     }
 
     return {

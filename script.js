@@ -89,7 +89,7 @@ var poetizer = (function () {
                 if (response.status === 201) {
                     return response.json();
                 } else {
-                    const error = new Error('promise chain cancelled');
+                    const error = new Error('promise chain cancelled getToken');
                     error.name = 'CancelPromiseChainError';
                     throw error;
                 }
@@ -134,7 +134,15 @@ var poetizer = (function () {
                 },
                 body: getTagsAsParams()
             })
-                .then(response => response.json())
+                .then(response => {
+                    if (response.status === 200) {
+                        return response.json();
+                    } else {
+                        const error = new Error('promise chain cancelled getPoems');
+                        error.name = 'CancelPromiseChainError';
+                        throw error;
+                    }
+                })
                 .then(poems => {
                     const mainDiv = document.getElementById('main');
 
@@ -184,6 +192,11 @@ var poetizer = (function () {
                         }
                     }
                 })
+                .catch(error => {
+                    if (error.name == 'CancelPromiseChainError') {
+                        document.getElementById('main').innerText = `Špatně zadaný tag, obsahuje nevyhledatelné znaky. Používejte pouze písmena a čárky.`;
+                    }
+                });
         } else {
             const mainDiv = document.getElementById('main');
             mainDiv.innerText = `Zadejte tag do vyhledávacího políčka. Před vyhledáváním se ujistěte, že jste přihlášení, případně tak učiňte kliknutím na tlačítko Login`;

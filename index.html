@@ -93,6 +93,7 @@
           </div>
 
           <div class="container">
+            <div id="login-info"></div>
             <label for="uname"><b>Váš E-mail na Poetizeru</b></label>
             <input type="text" placeholder="Enter Username" id="uname" required>
 
@@ -127,7 +128,7 @@
       </h2>
       <div class="search-form">
         <label for="tags">Zadávejte prosím bez symbolu # a tagy oddělujte čárkou</label>
-        <input type="text" id="tags" placeholder="Zadej tag">
+        <input type="text" id="tags" pattern="[^'\x22]+" placeholder="Zadej tag">
         <button id="search-submit" onclick="poetizer.getFirstPoemsByTags()" value="Vyhledej básně">Vyhledej
           básně</button>
       </div>

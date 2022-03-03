@@ -3,6 +3,8 @@ var poetizer = (function () {
     const WEB_URL = 'https://poetizer.com';
     let deviceToken = window.localStorage.getItem('device_token');
     let userId = window.localStorage.getItem('user_id');
+    let userName = window.localStorage.getItem('user_name');
+    let profileImg = window.localStorage.getItem('picture_url');
     let expiration = window.localStorage.getItem('expiration');
     let limit, offset;
     let calledAlready = false;
@@ -21,10 +23,15 @@ var poetizer = (function () {
                 document.getElementById('id01').style.display = 'none';
 
                 const userImg = document.createElement('img');
-                userImg.src = user.picture;
+                profileImg = user.picture;
+                userImg.src = profileImg;
+                window.localStorage.setItem('picture_url', profileImg);
+
 
                 const userNamePgf = document.createElement('p');
-                userNamePgf.innerText = `Jste přihlášen pod účtem: ${user.name}`;
+                userName = user.name;
+                userNamePgf.innerText = `Jste přihlášen pod účtem: ${userName}`;
+                window.localStorage.setItem('user_name', userName);
 
                 const logoutBtn = document.createElement('button');
                 logoutBtn.onclick = () => logout();
@@ -38,13 +45,36 @@ var poetizer = (function () {
             });
     }
 
+    function showUserInfoOffline() {
+
+        document.getElementById('id01').style.display = 'none';
+
+        const userImg = document.createElement('img');
+        profileImg = window.localStorage.getItem('picture_url');
+        userImg.src = profileImg;
+
+        const userNamePgf = document.createElement('p');
+        userName = window.localStorage.getItem('user_name');;
+        userNamePgf.innerText = `Jste přihlášen pod účtem: ${userName}`;
+
+        const logoutBtn = document.createElement('button');
+        logoutBtn.onclick = () => logout();
+        logoutBtn.setAttribute('id', 'logout-button');
+        logoutBtn.innerText = `Log out`;
+
+        const loginAreaDiv = document.getElementById('login-area');
+        loginAreaDiv.innerHTML = userImg.outerHTML;
+        loginAreaDiv.innerHTML += userNamePgf.outerHTML;
+        loginAreaDiv.appendChild(logoutBtn);
+
+    }
+
     function login() {
         const email = document.getElementById('uname').value;
         const password = document.getElementById('psw').value;
         const params = { 'email': email, 'password': password, 'platform': 'android', 'device_name': 'Randomdroid 9' };
 
         getToken(params);
-        showUserInfo();
     }
 
     function getToken(params) {
@@ -55,7 +85,15 @@ var poetizer = (function () {
             },
             body: JSON.stringify(params)
         })
-            .then(response => response.json())
+            .then(response => {
+                if (response.status === 201) {
+                    return response.json();
+                } else {
+                    const error = new Error('promise chain cancelled');
+                    error.name = 'CancelPromiseChainError';
+                    throw error;
+                }
+            })
             .then(tokenInfo => {
                 deviceToken = tokenInfo.device_token;
                 window.localStorage.setItem('device_token', deviceToken);
@@ -63,7 +101,14 @@ var poetizer = (function () {
                 window.localStorage.setItem('user_id', userId);
                 const jwtAccess = tokenInfo.jwt.access.split('.')[1];
                 const expirationInfo = JSON.parse(atob(jwtAccess));
-                window.localStorage.setItem('expiration', expirationInfo.exp);
+                expiration = expirationInfo.exp;
+                window.localStorage.setItem('expiration', expiration);
+                showUserInfo();
+            })
+            .catch(error => {
+                if (error.name == 'CancelPromiseChainError') {
+                    document.getElementById('login-info').innerText = `Přihlášení se nepodařilo`;
+                }
             });
 
     }
@@ -80,7 +125,7 @@ var poetizer = (function () {
     }
 
     function getPoemsByTags(limit, offset) {
-        if (getTagsAsParams().length != 0 && deviceToken != null) {
+        if (getTagsAsParams().length != 0 && deviceToken != null && expiration > (Date.now() / 1000)) {
             fetch(`${BASE_URL}/poems/search?limit=${limit}&offset=${offset}`, {
                 method: 'post',
                 headers: {
@@ -141,7 +186,7 @@ var poetizer = (function () {
                 })
         } else {
             const mainDiv = document.getElementById('main');
-            mainDiv.innerText = `Před vyhledáváním se prosím přihlaste kliknutím na tlačítko Login`;
+            mainDiv.innerText = `Zadejte tag do vyhledávacího políčka. Před vyhledáváním se ujistěte, že jste přihlášení, případně tak učiňte kliknutím na tlačítko Login`;
         }
     }
 
@@ -195,7 +240,11 @@ var poetizer = (function () {
             }
         });
         if (deviceToken != null && expiration > (Date.now() / 1000)) {
-            showUserInfo();
+            if (userName != null) {
+                showUserInfoOffline();
+            } else {
+                showUserInfo();
+            }
         }
     }
 

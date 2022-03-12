@@ -1,7 +1,3 @@
-body {
-    font-family: Arial, Helvetica, sans-serif;
-}
-
 /* Full-width input fields */
 input[type=text],
 input[type=password] {
@@ -143,6 +139,8 @@ span.psw {
     }
 }
 
+
+
 html {
     line-height: 1.15;
     -webkit-text-size-adjust: 100%
@@ -248,14 +246,6 @@ body {
     word-wrap: break-word
 }
 
-.hidden {
-    display: none
-}
-
-.invisible {
-    visibility: hidden
-}
-
 .container:after,
 .float-container:after {
     clear: both;
@@ -271,11 +261,6 @@ body {
     outline: none
 }
 
-
-.bg-photo {
-    background-attachment: scroll !important
-}
-
 .centered-top-placeholder {
     display: none
 }
@@ -283,53 +268,7 @@ body {
 .sidebar-container {
     background-color: #ffffff;
     max-width: 284px;
-    overflow-y: auto;
-    -webkit-transition-property: -webkit-transform;
-    transition-property: -webkit-transform;
-    transition-property: transform;
-    transition-property: transform, -webkit-transform;
-    -webkit-transition-duration: .3s;
-    transition-duration: .3s;
-    -webkit-transition-timing-function: cubic-bezier(0, 0, .2, 1);
-    transition-timing-function: cubic-bezier(0, 0, .2, 1);
     width: 284px;
-    z-index: 101;
-    -webkit-overflow-scrolling: touch
-}
-
-.sidebar-container .navigation {
-    line-height: 0;
-    padding: 16px
-}
-
-@media screen and (max-width:1439px) {
-    .sidebar-container {
-        bottom: 0;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: auto
-    }
-
-    .sidebar-container.sidebar-invisible {
-        -webkit-transition-timing-function: cubic-bezier(.4, 0, .6, 1);
-        transition-timing-function: cubic-bezier(.4, 0, .6, 1);
-        -webkit-transform: translateX(-284px);
-        transform: translateX(-284px)
-    }
-}
-
-@media screen and (min-width:1440px) {
-    .sidebar-container {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: auto
-    }
-
-    .sidebar-container .navigation {
-        display: none
-    }
 }
 
 body {
@@ -369,39 +308,9 @@ blockquote {
     text-align: center
 }
 
-.bg-photo-container {
-    height: 480px;
-    overflow: hidden;
-    position: absolute;
-    width: 100%;
-    z-index: 1
-}
-
-.bg-photo {
-    background: #f4f4f4 none repeat scroll top left;
-    background-attachment: scroll;
-    background-size: cover;
-    -webkit-filter: blur(0px);
-    filter: blur(0px);
-    height: calc(100% + 2 * 0px);
-    left: 0px;
-    position: absolute;
-    top: 0px;
-    width: calc(100% + 2 * 0px)
-}
-
-.bg-photo-overlay {
-    background: rgba(0, 0, 0, 0);
-    background-size: cover;
-    height: 480px;
-    position: absolute;
-    width: 100%;
-    z-index: 2
-}
-
 .page_body {
     position: relative;
-    z-index: 20
+    float: left;
 }
 
 .page_body .widget {
@@ -417,39 +326,18 @@ blockquote {
     flex-direction: column;
     margin: 0 auto;
     max-width: 922px;
+    width: 750px;
     min-height: 100vh;
-    padding: 24px 0
-}
-
-.page_body .centered>* {
-    -webkit-box-flex: 0;
-    flex: 0 0 auto
-}
-
-.page_body .centered>.footer {
-    margin-top: auto;
-    text-align: center
 }
 
 .page-name {
     margin: 32px 0 16px
 }
 
-.centered-top-container .page-name {
-    -webkit-transition-property: opacity;
-    transition-property: opacity;
-    -webkit-transition-duration: .5s;
-    transition-duration: .5s
-}
-
 .centered-bottom,
 .centered-top-container,
 .centered-top-placeholder {
-    padding: 0 16px
-}
-
-.centered-top {
-    position: relative
+    padding: 0 20px
 }
 
 .Header h1 {
@@ -479,40 +367,13 @@ article {
     box-shadow: 0 1px 4px 0 rgb(60 64 67 / 30%);
 }
 
-.vertical-ad-container {
-    float: right;
-    margin-right: 16px;
-    width: 128px
-}
-
 .sidebar-container {
-    box-shadow: 1px 1px 3px rgba(0, 0, 0, .1)
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, .1);
+    float: left;
+    height: 100%;
+  /*  position: fixed; */
 }
 
-.sidebar-container,
-.sidebar-container .sidebar_bottom {
-    background-color: #ffffff
-}
-
-.sidebar-container .navigation,
-.sidebar-container .sidebar_top_wrapper {
-    background-color: #f7f7f7
-}
-
-@media screen and (min-width:1440px) {
-    .sidebar-container {
-        min-height: 100%;
-        overflow: visible;
-        z-index: 32
-    }
-
-    @media screen and (min-width:1440px) {
-        body {
-            position: relative
-        }
-
-        .page_body {
-            margin-left: 284px
-        }
-    }
-}
+* {
+    box-sizing: border-box;
+  }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html dir="ltr" lang="en" coupert-item="9AF8D9A4E502F3784AD24272D81F0381">
+<html dir="ltr" lang="en">
 
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -21,11 +21,70 @@
 
 <body data-js-state="loaded" class="">
   <div class="page">
-    <div class="bg-photo-overlay"></div>
-    <div class="bg-photo-container">
-      <div class="bg-photo"></div>
-    </div>
+
+
     <div class="page_body">
+      <aside class="sidebar-container container clearboth" role="complementary">
+        </head>
+
+        <body>
+
+          <div id="login-area">
+            <h2>Nejprve se přihlaste</h2>
+            <button onclick="document.getElementById('id01').style.display='block'" style="width:auto;">Login</button>
+          </div>
+
+          <div id="id01" class="modal">
+
+            <div class="modal-content animate">
+              <div class="imgcontainer">
+                <span onclick="document.getElementById('id01').style.display='none'" class="close"
+                  title="Close Modal">&times;</span>
+                <img src="https://www.w3schools.com/howto/img_avatar2.png" alt="Avatar" class="avatar">
+              </div>
+
+              <div class="container">
+                <div id="login-info"></div>
+                <label for="uname"><b>Váš E-mail na Poetizeru</b></label>
+                <input type="text" placeholder="Enter Username" id="uname" required>
+
+                <label for="psw"><b>Vaše Heslo k Poetizeru</b></label>
+                <input type="password" placeholder="Enter Password" id="psw" required>
+
+                <button type="submit" onclick="poetizer.login()">Login</button>
+              </div>
+
+              <div class="container" style="background-color:#f1f1f1">
+                <button type="button" onclick="document.getElementById('id01').style.display='none'"
+                  class="cancelbtn">Cancel</button>
+              </div>
+            </div>
+          </div>
+
+          <script>
+            // Get the login modal
+            var modal = document.getElementById('id01');
+
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function (event) {
+              if (event.target == modal) {
+                modal.style.display = "none";
+              }
+            }
+          </script>
+
+
+          <h2>
+            Vyhledávání dle #tagu
+          </h2>
+          <div class="search-form">
+            <label for="tags">Zadávejte prosím bez symbolu # a tagy oddělujte čárkou</label>
+            <input type="text" id="tags" pattern="[^'\x22]+" placeholder="Zadej tag">
+            <button id="search-submit" onclick="poetizer.getFirstPoemsByTags()" value="Vyhledej básně">Vyhledej
+              básně</button>
+          </div>
+
+      </aside>
       <div class="centered">
         <header class="centered-top-container animating" role="banner">
           <div class="centered-top">
@@ -53,7 +112,7 @@
         <div class="centered-top-placeholder"></div>
 
         <div>
-          <div id="stats"></div>
+          <h3 id="stats" class="centered-bottom"></h3>
           <main class="centered-bottom" id="main" role="main" tabindex="-1">
             <h2>Jak funguje vyhledávání?</h2>
             <article>1. Nejdříve klikněte na zelené tlačítko Login a zadejte svoje přihlašovací údaje, které používáte
@@ -71,69 +130,7 @@
       </div>
     </div>
   </div>
-  <aside class="sidebar-container container sidebar-invisible" role="complementary">
-    <div class="navigation">
-    </div>
-    </head>
 
-    <body>
-
-      <div id="login-area">
-        <h2>Nejprve se přihlaste</h2>
-        <button onclick="document.getElementById('id01').style.display='block'" style="width:auto;">Login</button>
-      </div>
-
-      <div id="id01" class="modal">
-
-        <div class="modal-content animate">
-          <div class="imgcontainer">
-            <span onclick="document.getElementById('id01').style.display='none'" class="close"
-              title="Close Modal">&times;</span>
-            <img src="https://www.w3schools.com/howto/img_avatar2.png" alt="Avatar" class="avatar">
-          </div>
-
-          <div class="container">
-            <div id="login-info"></div>
-            <label for="uname"><b>Váš E-mail na Poetizeru</b></label>
-            <input type="text" placeholder="Enter Username" id="uname" required>
-
-            <label for="psw"><b>Vaše Heslo k Poetizeru</b></label>
-            <input type="password" placeholder="Enter Password" id="psw" required>
-
-            <button type="submit" onclick="poetizer.login()">Login</button>
-          </div>
-
-          <div class="container" style="background-color:#f1f1f1">
-            <button type="button" onclick="document.getElementById('id01').style.display='none'"
-              class="cancelbtn">Cancel</button>
-          </div>
-        </div>
-      </div>
-
-      <script>
-        // Get the login modal
-        var modal = document.getElementById('id01');
-
-        // When the user clicks anywhere outside of the modal, close it
-        window.onclick = function (event) {
-          if (event.target == modal) {
-            modal.style.display = "none";
-          }
-        }
-      </script>
-
-
-      <h2>
-        Vyhledávání dle #tagu
-      </h2>
-      <div class="search-form">
-        <label for="tags">Zadávejte prosím bez symbolu # a tagy oddělujte čárkou</label>
-        <input type="text" id="tags" pattern="[^'\x22]+" placeholder="Zadej tag">
-        <button id="search-submit" onclick="poetizer.getFirstPoemsByTags()" value="Vyhledej básně">Vyhledej
-          básně</button>
-      </div>
-
-  </aside>
 </body>
 
 </html>

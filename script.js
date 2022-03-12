@@ -126,6 +126,7 @@ var poetizer = (function () {
 
     function getPoemsByTags(limit, offset) {
         if (getTagsAsParams().length != 0 && deviceToken != null && expiration > (Date.now() / 1000)) {
+            showSearchedTags();
             fetch(`${BASE_URL}/poems/search?limit=${limit}&offset=${offset}`, {
                 method: 'post',
                 headers: {
@@ -239,6 +240,11 @@ var poetizer = (function () {
         const nextBtn = document.getElementById('next-poem-button');
         nextBtn.onclick = 'javascript:void(0)';
         nextBtn.innerText = errorMessage;
+    }
+
+    function showSearchedTags() {
+        let queryTags = document.getElementById('tags').value.trim();
+        document.getElementById('stats').innerText = `Hledané tagy: ${queryTags.replace(/\s+/g, '').replace(/,/g, `, `)}`;
     }
 
     window.onload = function () {

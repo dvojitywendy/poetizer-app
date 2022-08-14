@@ -1,0 +1,25 @@
+{
+  "name": "poetizer-app",
+  "version": "1.0.0",
+  "description": "Unofficial Poetizer Web App",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dvojitywendy/poetizer-app.git"
+  },
+  "keywords": [
+    "poetizer"
+  ],
+  "author": "dvojitywendy",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dvojitywendy/poetizer-app/issues"
+  },
+  "homepage": "https://github.com/dvojitywendy/poetizer-app#readme",
+  "devDependencies": {
+    "typescript": "^4.7.4"
+  }
+}

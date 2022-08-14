@@ -1,274 +1,246 @@
 var poetizer = (function () {
-    const BASE_URL = 'https://api.poetizer.com';
-    const WEB_URL = 'https://poetizer.com';
-    let deviceToken = window.localStorage.getItem('device_token');
-    let userId = window.localStorage.getItem('user_id');
-    let userName = window.localStorage.getItem('user_name');
-    let profileImg = window.localStorage.getItem('picture_url');
-    let expiration = window.localStorage.getItem('expiration');
-    let limit, offset;
-    let calledAlready = false;
-
+    var BASE_URL = 'https://api.poetizer.com';
+    var WEB_URL = 'https://poetizer.com';
+    var deviceToken = window.localStorage.getItem('device_token');
+    var userId = window.localStorage.getItem('user_id');
+    var userName = window.localStorage.getItem('user_name');
+    var profileImg = window.localStorage.getItem('picture_url');
+    var expiration = window.localStorage.getItem('expiration');
+    var limit, offset;
+    var calledAlready = false;
     function showUserInfo() {
-
-        fetch(`${BASE_URL}/users/${userId}`, {
+        fetch("".concat(BASE_URL, "/users/").concat(userId), {
             method: 'get',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Device-token ${deviceToken}`
+                'Authorization': "Device-token ".concat(deviceToken)
             }
         })
-            .then(response => response.json())
-            .then(user => {
-                document.getElementById('id01').style.display = 'none';
-
-                const userImg = document.createElement('img');
-                profileImg = user.picture;
-                userImg.src = profileImg;
-                window.localStorage.setItem('picture_url', profileImg);
-
-
-                const userNamePgf = document.createElement('p');
-                userName = user.name;
-                userNamePgf.innerText = `Jste přihlášen pod účtem: ${userName}`;
-                window.localStorage.setItem('user_name', userName);
-
-                const logoutBtn = document.createElement('button');
-                logoutBtn.onclick = () => logout();
-                logoutBtn.setAttribute('id', 'logout-button');
-                logoutBtn.innerText = `Log out`;
-
-                const loginAreaDiv = document.getElementById('login-area');
-                loginAreaDiv.innerHTML = userImg.outerHTML;
-                loginAreaDiv.innerHTML += userNamePgf.outerHTML;
-                loginAreaDiv.appendChild(logoutBtn);
-            });
+            .then(function (response) { return response.json(); })
+            .then(function (user) {
+            document.getElementById('id01').style.display = 'none';
+            var userImg = document.createElement('img');
+            profileImg = user.picture;
+            userImg.src = profileImg;
+            window.localStorage.setItem('picture_url', profileImg);
+            var userNamePgf = document.createElement('p');
+            userName = user.name;
+            userNamePgf.innerText = "Jste p\u0159ihl\u00E1\u0161en pod \u00FA\u010Dtem: ".concat(userName);
+            window.localStorage.setItem('user_name', userName);
+            var logoutBtn = document.createElement('button');
+            logoutBtn.onclick = function () { return logout(); };
+            logoutBtn.setAttribute('id', 'logout-button');
+            logoutBtn.innerText = "Log out";
+            var loginAreaDiv = document.getElementById('login-area');
+            loginAreaDiv.innerHTML = userImg.outerHTML;
+            loginAreaDiv.innerHTML += userNamePgf.outerHTML;
+            loginAreaDiv.appendChild(logoutBtn);
+        });
     }
-
     function showUserInfoOffline() {
-
         document.getElementById('id01').style.display = 'none';
-
-        const userImg = document.createElement('img');
+        var userImg = document.createElement('img');
         profileImg = window.localStorage.getItem('picture_url');
         userImg.src = profileImg;
-
-        const userNamePgf = document.createElement('p');
-        userName = window.localStorage.getItem('user_name');;
-        userNamePgf.innerText = `Jste přihlášen pod účtem: ${userName}`;
-
-        const logoutBtn = document.createElement('button');
-        logoutBtn.onclick = () => logout();
+        var userNamePgf = document.createElement('p');
+        userName = window.localStorage.getItem('user_name');
+        ;
+        userNamePgf.innerText = "Jste p\u0159ihl\u00E1\u0161en pod \u00FA\u010Dtem: ".concat(userName);
+        var logoutBtn = document.createElement('button');
+        logoutBtn.onclick = function () { return logout(); };
         logoutBtn.setAttribute('id', 'logout-button');
-        logoutBtn.innerText = `Log out`;
-
-        const loginAreaDiv = document.getElementById('login-area');
+        logoutBtn.innerText = "Log out";
+        var loginAreaDiv = document.getElementById('login-area');
         loginAreaDiv.innerHTML = userImg.outerHTML;
         loginAreaDiv.innerHTML += userNamePgf.outerHTML;
         loginAreaDiv.appendChild(logoutBtn);
-
     }
-
     function login() {
-        const email = document.getElementById('uname').value;
-        const password = document.getElementById('psw').value;
-        const params = { 'email': email, 'password': password, 'platform': 'android', 'device_name': 'Randomdroid 9' };
-
-        getToken(params);
+        var email = document.getElementById('uname');
+        var password = document.getElementById('psw');
+        if (email != null && password != null) {
+            var params = { 'email': email.value, 'password': password.value, 'platform': 'android', 'device_name': 'Randomdroid 9' };
+            getToken(params);
+        }
     }
-
     function getToken(params) {
-        fetch(`${BASE_URL}/devices/email`, {
+        fetch("".concat(BASE_URL, "/devices/email"), {
             method: 'post',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(params)
         })
-            .then(response => {
-                if (response.status === 201) {
-                    return response.json();
-                } else {
-                    const error = new Error('promise chain cancelled getToken');
-                    error.name = 'CancelPromiseChainError';
-                    throw error;
-                }
-            })
-            .then(tokenInfo => {
-                deviceToken = tokenInfo.device_token;
-                window.localStorage.setItem('device_token', deviceToken);
-                userId = tokenInfo.user_id;
-                window.localStorage.setItem('user_id', userId);
-                const jwtAccess = tokenInfo.jwt.access.split('.')[1];
-                const expirationInfo = JSON.parse(atob(jwtAccess));
-                expiration = expirationInfo.exp;
-                window.localStorage.setItem('expiration', expiration);
-                showUserInfo();
-            })
-            .catch(error => {
-                if (error.name == 'CancelPromiseChainError') {
-                    document.getElementById('login-info').innerText = `Přihlášení se nepodařilo`;
-                }
-            });
-
+            .then(function (response) {
+            if (response.status === 201) {
+                return response.json();
+            }
+            else {
+                var error = new Error('promise chain cancelled getToken');
+                error.name = 'CancelPromiseChainError';
+                throw error;
+            }
+        })
+            .then(function (tokenInfo) {
+            deviceToken = tokenInfo.device_token;
+            window.localStorage.setItem('device_token', deviceToken);
+            userId = tokenInfo.user_id;
+            window.localStorage.setItem('user_id', userId);
+            var jwtAccess = tokenInfo.jwt.access.split('.')[1];
+            var expirationInfo = JSON.parse(atob(jwtAccess));
+            expiration = expirationInfo.exp;
+            window.localStorage.setItem('expiration', expiration);
+            showUserInfo();
+        })["catch"](function (error) {
+            if (error.name == 'CancelPromiseChainError') {
+                document.getElementById('login-info').innerText = "P\u0159ihl\u00E1\u0161en\u00ED se nepoda\u0159ilo";
+            }
+        });
     }
-
     function logout() {
         window.localStorage.clear();
         location.reload();
     }
-
     function getFirstPoemsByTags() {
-        const mainDiv = document.getElementById('main');
+        var mainDiv = document.getElementById('main');
         mainDiv.innerHTML = '';
         getPoemsByTags(6, 0);
     }
-
     function getPoemsByTags(limit, offset) {
-        if (getTagsAsParams().length != 0 && deviceToken != null && expiration > (Date.now() / 1000)) {
+        if (getTagsAsParams().length != 0 && deviceToken != null && +expiration > (Date.now() / 1000)) {
             showSearchedTags();
-            fetch(`${BASE_URL}/poems/search?limit=${limit}&offset=${offset}`, {
+            fetch("".concat(BASE_URL, "/poems/search?limit=").concat(limit, "&offset=").concat(offset), {
                 method: 'post',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Device-token ${deviceToken}`
+                    'Authorization': "Device-token ".concat(deviceToken)
                 },
                 body: getTagsAsParams()
             })
-                .then(response => {
-                    if (response.status === 200) {
-                        return response.json();
-                    } else {
-                        const error = new Error('promise chain cancelled getPoems');
-                        error.name = 'CancelPromiseChainError';
-                        throw error;
+                .then(function (response) {
+                if (response.status === 200) {
+                    return response.json();
+                }
+                else {
+                    var error = new Error('promise chain cancelled getPoems');
+                    error.name = 'CancelPromiseChainError';
+                    throw error;
+                }
+            })
+                .then(function (poems) {
+                var mainDiv = document.getElementById('main');
+                if (poems.poems.length == 0) {
+                    var errorMessage = "Pro tento tag nebyly nalezeny \u017E\u00E1dn\u00E9 b\u00E1sn\u011B";
+                    if (!calledAlready) {
+                        mainDiv.innerText = errorMessage;
                     }
-                })
-                .then(poems => {
-                    const mainDiv = document.getElementById('main');
-
-                    if (poems.poems.length == 0) {
-                        const errorMessage = `Pro tento tag nebyly nalezeny žádné básně`;
-                        if (!calledAlready) {
-                            mainDiv.innerText = errorMessage;
-                        }
-                        hideNextButton(errorMessage);
+                    hideNextButton(errorMessage);
+                }
+                else {
+                    poems.poems.forEach(function (element) {
+                        var article = document.createElement('article');
+                        var poemTitleLnk = document.createElement('a');
+                        poemTitleLnk.href = "".concat(WEB_URL, "/poem/").concat(element.id);
+                        poemTitleLnk.target = '_blank';
+                        var poemTitleHdr = document.createElement('h2');
+                        poemTitleHdr.innerText = element.title;
+                        poemTitleLnk.appendChild(poemTitleHdr);
+                        var poemBodyPgf = document.createElement('p');
+                        poemBodyPgf.insertAdjacentHTML('afterbegin', element.text);
+                        var authorLnk = document.createElement('a');
+                        authorLnk.href = "".concat(WEB_URL, "/author/").concat(element.author.id);
+                        authorLnk.target = '_blank';
+                        authorLnk.innerText = element.author.name;
+                        var hashtagsPgf = document.createElement('p');
+                        hashtagsPgf.innerText = "Tags: ".concat(element.tags);
+                        article.appendChild(poemTitleLnk);
+                        article.appendChild(poemBodyPgf);
+                        article.insertAdjacentHTML('beforeend', "Autor: ".concat(authorLnk.outerHTML));
+                        article.appendChild(hashtagsPgf);
+                        mainDiv.appendChild(article);
+                    });
+                    if (poems.poems.length == limit) {
+                        setLimitAndOffset(poems.next);
+                        createNextButton();
                     }
-                    else {
-                        poems.poems.forEach(element => {
-                            const article = document.createElement('article');
-
-                            const poemTitleLnk = document.createElement('a');
-                            poemTitleLnk.href = `${WEB_URL}/poem/${element.id}`;
-                            poemTitleLnk.target = '_blank';
-                            const poemTitleHdr = document.createElement('h2');
-                            poemTitleHdr.innerText = element.title;
-                            poemTitleLnk.appendChild(poemTitleHdr);
-
-                            const poemBodyPgf = document.createElement('p');
-                            poemBodyPgf.insertAdjacentHTML('afterBegin', element.text);
-
-                            const authorLnk = document.createElement('a');
-                            authorLnk.href = `${WEB_URL}/author/${element.author.id}`;
-                            authorLnk.target = '_blank';
-                            authorLnk.innerText = element.author.name;
-
-                            const hashtagsPgf = document.createElement('p');
-                            hashtagsPgf.innerText = `Tags: ${element.tags}`;
-
-                            article.appendChild(poemTitleLnk);
-                            article.appendChild(poemBodyPgf);
-                            article.insertAdjacentHTML('beforeend', `Autor: ${authorLnk.outerHTML}`);
-                            article.appendChild(hashtagsPgf);
-
-                            mainDiv.appendChild(article);
-                        });
-
-                        if (poems.poems.length == limit) {
-                            setLimitAndOffset(poems.next);
-                            createNextButton();
-                        }
-                        if (poems.poems.length < limit) {
-                            hideNextButton(`Žádné další básně`);
-                        }
+                    if (poems.poems.length < limit) {
+                        hideNextButton("\u017D\u00E1dn\u00E9 dal\u0161\u00ED b\u00E1sn\u011B");
                     }
-                })
-                .catch(error => {
-                    if (error.name == 'CancelPromiseChainError') {
-                        document.getElementById('main').innerText = `Špatně zadaný tag, obsahuje nevyhledatelné znaky. Používejte pouze písmena a čárky.`;
-                    }
-                });
-        } else {
-            const mainDiv = document.getElementById('main');
-            mainDiv.innerText = `Zadejte tag do vyhledávacího políčka. Před vyhledáváním se ujistěte, že jste přihlášení, případně tak učiňte kliknutím na tlačítko Login`;
+                }
+            })["catch"](function (error) {
+                if (error.name == 'CancelPromiseChainError') {
+                    document.getElementById('main').innerText = "\u0160patn\u011B zadan\u00FD tag, obsahuje nevyhledateln\u00E9 znaky. Pou\u017E\u00EDvejte pouze p\u00EDsmena a \u010D\u00E1rky.";
+                }
+            });
+        }
+        else {
+            var mainDiv = document.getElementById('main');
+            mainDiv.innerText = "Zadejte tag do vyhled\u00E1vac\u00EDho pol\u00ED\u010Dka. P\u0159ed vyhled\u00E1v\u00E1n\u00EDm se ujist\u011Bte, \u017Ee jste p\u0159ihl\u00E1\u0161en\u00ED, p\u0159\u00EDpadn\u011B tak u\u010Di\u0148te kliknut\u00EDm na tla\u010D\u00EDtko Login";
         }
     }
-
     function getTagsAsParams() {
-        let queryTags = document.getElementById('tags').value.trim();
-        if (queryTags.length == 0 || queryTags == `Zadej tag`) {
-            const mainDiv = document.getElementById('main');
-            mainDiv.innerText = `Nezadali jste žádný tag do vyhledávacího okýnka :)`;
+        var queryTagsElement = document.getElementById('tags');
+        var queryTags = queryTagsElement.value.trim();
+        if (queryTags.length == 0 || queryTags == "Zadej tag") {
+            var mainDiv = document.getElementById('main');
+            mainDiv.innerText = "Nezadali jste \u017E\u00E1dn\u00FD tag do vyhled\u00E1vac\u00EDho ok\u00FDnka :)";
             return '';
         }
-        return `{"tags":["${queryTags.replace(/\s+/g, '').replace(/,/g, `", "`)}"]}`;
+        return "{\"tags\":[\"".concat(queryTags.replace(/\s+/g, '').replace(/,/g, "\", \""), "\"]}");
     }
-
     function setLimitAndOffset(nextPageLink) {
-        const offsetArray = nextPageLink.split('=');
-        const limitArray = offsetArray[1].split('&');
-        limit = limitArray[0];
-        offset = offsetArray[2];
+        var offsetArray = nextPageLink.split('=');
+        var limitArray = offsetArray[1].split('&');
+        limit = +limitArray[0];
+        offset = +offsetArray[2];
     }
-
     function createNextButton() {
         if (!calledAlready) {
-            const nextBtn = document.createElement('button');
-            nextBtn.onclick = () => getPoemsByTags(limit, offset);
+            var nextBtn = document.createElement('button');
+            nextBtn.onclick = function () { return getPoemsByTags(limit, offset); };
             nextBtn.setAttribute('id', 'next-poem-button');
-            nextBtn.innerText = `Další básně`;
+            nextBtn.innerText = "Dal\u0161\u00ED b\u00E1sn\u011B";
             document.getElementById('next-area').appendChild(nextBtn);
-        } else {
-            const nextBtn = document.getElementById('next-poem-button');
-            nextBtn.onclick = () => getPoemsByTags(limit, offset);
-            nextBtn.innerText = `Další básně`;
+        }
+        else {
+            var nextBtn = document.getElementById('next-poem-button');
+            nextBtn.onclick = function () { return getPoemsByTags(limit, offset); };
+            nextBtn.innerText = "Dal\u0161\u00ED b\u00E1sn\u011B";
         }
         calledAlready = true;
     }
-
     function hideNextButton(errorMessage) {
-        const nextBtn = document.getElementById('next-poem-button');
-        nextBtn.onclick = 'javascript:void(0)';
+        var nextBtn = document.getElementById('next-poem-button');
+        nextBtn.onclick = function () { return; };
         nextBtn.innerText = errorMessage;
     }
-
     function showSearchedTags() {
-        let queryTags = document.getElementById('tags').value.trim();
-        document.getElementById('stats').innerText = `Hledané tagy: ${queryTags.replace(/\s+/g, '').replace(/,/g, `, `)}`;
+        var queryTagsElement = document.getElementById('tags');
+        var queryTags = queryTagsElement.value.trim();
+        document.getElementById('stats').innerText = "Hledan\u00E9 tagy: ".concat(queryTags.replace(/\s+/g, '').replace(/,/g, ", "));
     }
-
     window.onload = function () {
         document.querySelector('#tags').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
+            if (e.key === 'Enter')
                 getFirstPoemsByTags();
-            }
         });
         document.querySelector('#psw').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 login();
             }
         });
-        if (deviceToken != null && expiration > (Date.now() / 1000)) {
+        if (deviceToken != null && +expiration > (Date.now() / 1000)) {
             if (userName != null) {
                 showUserInfoOffline();
-            } else {
+            }
+            else {
                 showUserInfo();
             }
         }
-    }
-
+    };
     return {
         getFirstPoemsByTags: getFirstPoemsByTags,
         login: login
     };
 })();
+//# sourceMappingURL=script.js.map

@@ -4,10 +4,10 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta content="width=device-width, initial-scale=1" name="viewport">
-  <script src="./script.js"></script>
+  <script src="./dist/bundle.js"></script>
+  <!-- <script>var poetizer = {};</script>  -->      
   <link rel="stylesheet" href="./style.css">
   <title>Search by tag 🏷 @ Poetizer</title>
-
   <!-- Chrome, Firefox OS and Opera -->
   <meta content="#f4f4f4" name="theme-color">
   <!-- Windows Phone -->
@@ -59,7 +59,7 @@
                 <label for="psw"><b>Vaše Heslo k Poetizeru</b></label>
                 <input type="password" placeholder="Enter Password" id="psw" required>
 
-                <button type="submit" onclick="poetizer.login()">Login</button>
+                <button id="log-me-button" type="submit" >Login</button>
               </div>
 
               <div class="container" style="background-color:#f1f1f1">
@@ -88,7 +88,7 @@
           <div class="search-form">
             <label for="tags">Zadávejte prosím bez symbolu # a tagy oddělujte čárkou</label>
             <input type="text" id="tags" pattern="[^'\x22]+" placeholder="Zadej tag">
-            <button id="search-submit" onclick="poetizer.getFirstPoemsByTags()" value="Vyhledej básně">Vyhledej
+            <button id="search-submit" value="Vyhledej básně">Vyhledej
               básně</button>
           </div>
 

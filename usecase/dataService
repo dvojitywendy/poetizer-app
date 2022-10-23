@@ -1,0 +1,12 @@
+// import { ApiService } from "../api/apiService"
+// import { Poems } from "../entities/poems.response"
+
+// export class DataService {
+    
+//     getPoemsUsingTags(limit, offset, tags): Promise<any> {
+//         return new ApiService("TODO").getPoemsByTags(limit, offset, tags)
+//             .then(res => res.json())
+//             .then((res: Poems) => {
+//             })
+//     }
+// }

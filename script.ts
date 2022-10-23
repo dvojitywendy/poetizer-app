@@ -1,3 +1,28 @@
+import { ApiService } from "./api/apiService";
+
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyBGwh9Gt0JI_n6BrdSqXQzF_7gG8QM83xc",
+  authDomain: "great-again-chat.firebaseapp.com",
+  projectId: "great-again-chat",
+  storageBucket: "great-again-chat.appspot.com",
+  messagingSenderId: "848199095621",
+  appId: "1:848199095621:web:56a138ca5ee700962a9a2c",
+  measurementId: "G-DXZSZQ6F8P"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+
+
 var poetizer = (function () {
     const BASE_URL = 'https://api.poetizer.com';
     const WEB_URL = 'https://poetizer.com';
@@ -129,23 +154,17 @@ var poetizer = (function () {
     function getPoemsByTags(limit: number, offset: number) {
         if (getTagsAsParams().length != 0 && deviceToken != null && +expiration > (Date.now() / 1000)) {
             showSearchedTags();
-            fetch(`${BASE_URL}/poems/search?limit=${limit}&offset=${offset}`, {
-                method: 'post',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Device-token ${deviceToken}`
-                },
-                body: getTagsAsParams()
-            })
-                .then(response => {
-                    if (response.status === 200) {
-                        return response.json();
-                    } else {
-                        const error = new Error('promise chain cancelled getPoems');
-                        error.name = 'CancelPromiseChainError';
-                        throw error;
-                    }
-                })
+            let api = new ApiService(deviceToken);
+            api.getPoemsByTags(limit, offset, getTagsAsParams())
+                // .then(response => {
+                //     if (response.status === 200) {
+                //         return response.json();
+                //     } else {
+                //         const error = new Error('promise chain cancelled getPoems');
+                //         error.name = 'CancelPromiseChainError';
+                //         throw error;
+                //     }
+                // })
                 .then(poems => {
                     const mainDiv = document.getElementById('main');
 
@@ -157,26 +176,26 @@ var poetizer = (function () {
                         hideNextButton(errorMessage);
                     }
                     else {
-                        poems.poems.forEach((element: { id: any; title: string; text: string; author: { id: any; name: string; }; tags: any; }) => {
+                        poems.poems.forEach(poem => {
                             const article = document.createElement('article');
 
                             const poemTitleLnk = document.createElement('a');
-                            poemTitleLnk.href = `${WEB_URL}/poem/${element.id}`;
+                            poemTitleLnk.href = `${WEB_URL}/poem/${poem.id}`;
                             poemTitleLnk.target = '_blank';
                             const poemTitleHdr = document.createElement('h2');
-                            poemTitleHdr.innerText = element.title;
+                            poemTitleHdr.innerText = poem.title;
                             poemTitleLnk.appendChild(poemTitleHdr);
 
                             const poemBodyPgf = document.createElement('p');
-                            poemBodyPgf.insertAdjacentHTML('afterbegin', element.text);
+                            poemBodyPgf.insertAdjacentHTML('afterbegin', poem.text);
 
                             const authorLnk = document.createElement('a');
-                            authorLnk.href = `${WEB_URL}/author/${element.author.id}`;
+                            authorLnk.href = `${WEB_URL}/author/${poem.author.id}`;
                             authorLnk.target = '_blank';
-                            authorLnk.innerText = element.author.name;
+                            authorLnk.innerText = poem.author.name;
 
                             const hashtagsPgf = document.createElement('p');
-                            hashtagsPgf.innerText = `Tags: ${element.tags}`;
+                            hashtagsPgf.innerText = `Tags: ${poem.tags}`;
 
                             article.appendChild(poemTitleLnk);
                             article.appendChild(poemBodyPgf);
@@ -255,13 +274,19 @@ var poetizer = (function () {
 
     window.onload = function () {
         document.querySelector('#tags').addEventListener('keypress', (e: KeyboardEvent) => {
-            if(e.key === 'Enter')
-            getFirstPoemsByTags();
+            if (e.key === 'Enter')
+                getFirstPoemsByTags();
         });
         document.querySelector('#psw').addEventListener('keypress', (e: KeyboardEvent) => {
             if (e.key === 'Enter') {
                 login();
             }
+        });
+        document.querySelector('#log-me-button').addEventListener("click", function handleClick(event) {
+            login();
+        });
+        document.querySelector('#search-submit').addEventListener("click", function handleClick(event) {
+            getFirstPoemsByTags();
         });
         if (deviceToken != null && +expiration > (Date.now() / 1000)) {
             if (userName != null) {

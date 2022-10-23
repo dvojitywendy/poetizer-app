@@ -2,9 +2,11 @@
   "name": "poetizer-app",
   "version": "1.0.0",
   "description": "Unofficial Poetizer Web App",
-  "main": "script.js",
+  "main": "./script.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "develop": "webpack-dev-server --mode development",
+    "build": "webpack --mode production"
   },
   "repository": {
     "type": "git",
@@ -20,6 +22,22 @@
   },
   "homepage": "https://github.com/dvojitywendy/poetizer-app#readme",
   "devDependencies": {
-    "typescript": "^4.7.4"
+    "@types/node": "^18.8.5",
+    "ts-loader": "^9.4.1",
+    "typescript": "^4.8.4",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0"
+  },
+  "dependencies": {
+    "-": "0.0.1",
+    "acorn": "^8.8.0",
+    "acorn-import-assertions": "^1.8.0",
+    "browserify": "^17.0.0",
+    "bufferutil": "^4.0.7",
+    "csstype": "^3.1.0",
+    "encoding": "^0.1.13",
+    "firebase": "^9.12.1",
+    "npm": "^8.19.2",
+    "utf-8-validate": "^5.0.10"
   }
 }
